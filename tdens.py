@@ -12,9 +12,7 @@ charge using PySCF
 Please cite: https://doi.org/10.1063/5.0016009
 """
 import numpy as np
-import scipy.linalg
 from pyscf import gto, scf, tdscf, lib, dft, lo
-from functools import reduce
 
 def get_ovlp(self, mol=None):
     if mol is None: mol = self.mol

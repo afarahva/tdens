@@ -159,3 +159,6 @@ def coupling_tdchg(chgA,chgB,coordsA,coordsB):
     
     cJ = np.sum( np.outer(chgA,chgB)/cdist(coordsA,coordsB) )
     return cJ
+
+if __name__ == "__main__":
+    pass
