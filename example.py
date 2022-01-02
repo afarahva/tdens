@@ -107,12 +107,12 @@ tdmA = np.sqrt(2) * o_A.dot(cis_A).dot(v_A.T)
 tdmB = np.sqrt(2) * o_B.dot(cis_B).dot(v_B.T)
 
 #Mullikan population analysis using transition density matrices
-popAm,chrgAm = td_chrg_mulliken(molA,tdmA,scf.hf.get_ovlp(molA))
-popAm,chrgBm = td_chrg_mulliken(molB,tdmB,scf.hf.get_ovlp(molB))
+popAm,chrgAm = pop_mulliken(molA,tdmA)
+popAm,chrgBm = pop_mulliken(molB,tdmB)
 
 #Lowdin population analysis
-popAl,chrgAl = td_chrg_lowdin(molA,tdmA,scf.hf.get_ovlp(molA))
-popBl,chrgBl = td_chrg_lowdin(molB,tdmB,scf.hf.get_ovlp(molB))
+popAl,chrgAl = pop_lowdin(molA,tdmA)
+popBl,chrgBl = pop_lowdin(molB,tdmB)
 
 #Natural Atomic Orbitals
 C_A = lo.orth_ao(mfA, 'nao')
@@ -121,7 +121,7 @@ o_A_nao = moA_nao[:,mfA.mo_occ!=0]
 v_A_nao = moA_nao[:,mfA.mo_occ==0] 
 tdmA_nao = np.sqrt(2) * o_A_nao.dot(cis_A).dot(v_A_nao.T)
 
-popAnat,chrgAnat = td_chrg_mulliken(molA, tdmA_nao, np.eye(molA.nao_nr()))
+popAnat,chrgAnat = pop_mulliken(molA, tdmA_nao, np.eye(molA.nao_nr()))
 
 C_B = lo.orth_ao(mfB, 'nao')
 moB_nao = np.linalg.solve(C_B, mfB.mo_coeff)
@@ -129,7 +129,7 @@ o_B_nao = moB_nao[:,mfB.mo_occ!=0]
 v_B_nao = moB_nao[:,mfB.mo_occ==0] 
 tdmB_nao = np.sqrt(2) * o_B_nao.dot(cis_B).dot(v_B_nao.T)
 
-popBnat,chrgBnat = td_chrg_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
+popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 
     
 #%%
@@ -149,7 +149,7 @@ cJ2 = cJ2 * 2625.50
 cK2 = cK2 * 2625.50
 t2 = time() - t
 
-# Couplings with Mullikan transition charge projection
+# Couplings with Mulliken transition charge projection
 t = time()
 Jq_mul = coupling_tdchg(chrgAm,chrgBm,molA.atom_coords(),molB.atom_coords()) * 2625.50
 t_mul = time() - t

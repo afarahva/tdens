@@ -41,7 +41,7 @@ def pop_mulliken(mol, dm, s=None):
     pop. Numpy Array. Population in each atomic orbital. 
     chg. Numpy Array. Charge on each atom. 
     """
-    if np.all(s == None):
+    if s is None:
         s = scf.hf.get_ovlp(mol)
         
     pop = np.einsum('ij,ji->i', dm, s)
@@ -52,7 +52,7 @@ def pop_mulliken(mol, dm, s=None):
     
     return pop, chg
 
-def pop_lowdin(mol, dm):
+def pop_lowdin(mol, dm, s = None):
     """
     Lowdin population analysis
     
@@ -77,7 +77,9 @@ def pop_lowdin(mol, dm):
     pop. Numpy Array. Population in each atomic orbital. 
     chg. Numpy Array. Charge on each atom. 
     """
-    s = scf.hf.get_ovlp(mol)
+    if s is None:
+        s = scf.hf.get_ovlp(mol)
+    
     U,s_diag,_ = np.linalg.svd(s,hermitian=True)
     S_half = U.dot(np.diag(s_diag**(0.5))).dot(U.T)
     
