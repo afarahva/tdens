@@ -18,7 +18,7 @@ from time import time
 from tdens import *
 from coupling import *
 
-# coordinates of alanine molecule 1
+# coordinates of Hydrogen molecule 1
 ala1 = \
 """
   H    0.1943255    1.0032856    2.5356066
@@ -57,6 +57,7 @@ ala2 = \
 """
 
 """ Run Electronic Structure Calculations """
+
 #gto.M, gaussian type orbital molecule object
 #scf.RKS, restricted kohn sham type Fock Matrix
 #scf.RKS.TDA, TDDFT Tamm-Dancoff Approximation, Object  
@@ -137,10 +138,10 @@ popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 
 # Couplings standard method
 t = time()
-cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
-cJ1 = cJ1 * 2625.50
-cK1 = cK1 * 2625.50
-t1 = time() - t
+#cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
+# cJ1 = cJ1 * 2625.50
+# cK1 = cK1 * 2625.50
+# t1 = time() - t
 
 # Couplings with efficient density fitting method
 t = time()
