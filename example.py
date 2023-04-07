@@ -18,7 +18,7 @@ from time import time
 from tdens import *
 from coupling import *
 
-# coordinates of Hydrogen molecule 1
+# coordinates of alanine molecule 1
 ala1 = \
 """
   H    0.1943255    1.0032856    2.5356066
@@ -95,6 +95,9 @@ state_id = 0  # first excited state
 e_A = tdA.e[state_id]
 e_B = tdB.e[state_id]
 
+print("Excitation energy Molecule A - ",e_A)
+print("Excitation energy Molecule B - ",e_B)
+
 #%%
 """ Process Transition Density """
 
@@ -137,8 +140,8 @@ popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 """ Calculate and Compare Couplings """
 
 # Couplings standard method
-t = time()
-#cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
+# t = time()
+# cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
 # cJ1 = cJ1 * 2625.50
 # cK1 = cK1 * 2625.50
 # t1 = time() - t
