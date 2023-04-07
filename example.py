@@ -40,20 +40,20 @@ ala1 = \
 # coordinates of alanine molecule 2
 ala2 = \
 """
-  H    4.6181727    0.9759502    3.2435439
-  C    4.9813588    1.1692796    2.2424478
-  C    4.0900782    1.1799396    1.1655316
-  H    3.0370046    0.9947794    1.3336513
-  C    4.5577724    1.4296108   -0.1288189
-  H    3.8586015    1.4355043   -0.9556332
-  C    5.9225445    1.6702836   -0.3518605
-  N    6.3978682    1.9233003   -1.6620530
-  H    5.7504781    1.9337213   -2.4638193
-  H    7.3984007    2.1008534   -1.8336957
-  C    6.8126797    1.6583033    0.7334006
-  H    7.8683363    1.8421714    0.5775875
-  C    6.3416806    1.4082969    2.0264872
-  H    7.0310557    1.3998559    2.8608752
+  H    6.6181727    4.9759502    3.2435439
+  C    6.9813588    5.1692796    2.2424478
+  C    6.0900782    5.1799396    1.1655316
+  H    5.0370046    4.9947794    1.3336513
+  C    6.5577724    5.4296108   -0.1288189
+  H    5.8586015    5.4355043   -0.9556332
+  C    7.9225445    5.6702836   -0.3518605
+  N    8.3978682    5.9233003   -1.6620530
+  H    7.7504781    5.9337213   -2.4638193
+  H    9.3984007    6.1008534   -1.8336957
+  C    8.8126797    5.6583033    0.7334006
+  H    9.8683363    5.8421714    0.5775875
+  C    8.3416806    5.4082969    2.0264872
+  H    9.0310557    5.3998559    2.8608752
 """
 
 """ Run Electronic Structure Calculations """
@@ -146,6 +146,8 @@ popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 # cK1 = cK1 * 2625.50
 # t1 = time() - t
 
+cJ1,cK1,t1 = np.NaN, np.NaN, np.NaN # this calculation is so slow it's not even worth benchmarking
+
 # Couplings with efficient density fitting method
 t = time()
 cJ2,cK2 = jk_ints_eff(molA,molB,tdmA,tdmB,calcK=True)
@@ -169,9 +171,9 @@ Jq_nat = coupling_tdchg(chrgAnat,chrgBnat,molA.atom_coords(),molB.atom_coords())
 t_nat = time() - t
 
 print("Couplings (kJ/mol)")
-print("cFull = %4.4f, cFull_eff = %4.4f, c_mul = %4.4f, c_low = %4.4f, c_mull= %4.4f",
-      (cJ1 - cK1), (cJ2 - cK2), Jq_mul, Jq_low, Jq_nat)
+print("cFull = %4.4f, cFull_eff = %4.4f, c_mul = %4.4f, c_low = %4.4f, c_mull= %4.4f\n"%(
+    (cJ1 - cK1), (cJ2 - cK2), Jq_mul, Jq_low, Jq_nat))
 
 print("Time (s)")
-print("tFull = %d, tFull_eff = %d, t_mul = %d, t_low = %d, c_mull= %d",
-      (t1,t2,t_mul,t_low,t_nat))
+print("tFull = %0.1f, tFull_eff = %0.6f, t_mul = %0.6f, t_low = %0.6f, c_mull= %0.6f\n"%(
+    (t1,t2,t_mul,t_low,t_nat)))
