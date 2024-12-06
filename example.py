@@ -56,16 +56,10 @@ ala2 = \
   H    9.0310557    5.3998559    2.8608752
 """
 
-""" Run Electronic Structure Calculations """
-
-#gto.M, gaussian type orbital molecule object
-#scf.RKS, restricted kohn sham type Fock Matrix
-#scf.RKS.TDA, TDDFT Tamm-Dancoff Approximation, Object  
-
 ##### Run electronic structure for molecule 1
 
 #Make Molecule Object
-molA = gto.M(atom=ala1, basis='6-31+g(d)')
+molA = gto.M(atom=ala1, basis='sto-3g')
 
 #Make SCF Object, Diagonalize Fock Matrix
 mfA = scf.RKS(molA).run(xc='b3lyp')
@@ -78,7 +72,7 @@ tdA = mfA.TDA().run() #Do TDDFT-TDA
 ##### Run electronic structure for molecule 2
 
 #Make Molecule Object
-molB = gto.M(atom=ala2, basis='6-31+g(d)') 
+molB = gto.M(atom=ala2, basis='sto-3g') 
 
 #Make SCF Object, Diagonalize Fock Matrix
 mfB = scf.RKS(molB).run(xc='b3lyp')
@@ -88,7 +82,9 @@ o_B = moB[:,mfB.mo_occ!=0] #occupied orbitals
 v_B = moB[:,mfB.mo_occ==0] #virtual orbitals
 tdB = mfB.TDA().run() #Do TDDFT-TDA
 
+#%%
 ##### Extract Information for given excited state
+
 state_id = 0  # first excited state
 
 #excitation energies
@@ -102,23 +98,25 @@ print("Excitation energy Molecule B - ",e_B)
 """ Process Transition Density """
 
 # The CIS coeffcients, shape [nocc,nvirt]
-#Index 0 ~ X matrix/CIS coefficients, Index Y ~ Deexcitation Coefficients
-cis_A = tdA.xy[state_id][0] 
+cis_A = tdA.xy[state_id][0]
+cis_A *= 1. / np.linalg.norm(cis_A)
+
 cis_B = tdB.xy[state_id][0]
+cis_B *= 1. / np.linalg.norm(cis_B)
 
 #Calculate Ground to Excited State density matrix
 tdmA = np.sqrt(2) * o_A.dot(cis_A).dot(v_A.T)
 tdmB = np.sqrt(2) * o_B.dot(cis_B).dot(v_B.T)
 
-#Mullikan population analysis using transition density matrices
+# Mullikan population analysis using transition density matrices
 popAm,chrgAm = pop_mulliken(molA,tdmA)
 popAm,chrgBm = pop_mulliken(molB,tdmB)
 
-#Lowdin population analysis
+# Lowdin population analysis
 popAl,chrgAl = pop_lowdin(molA,tdmA)
 popBl,chrgBl = pop_lowdin(molB,tdmB)
 
-#Natural Atomic Orbitals
+# Natural population analysis
 C_A = lo.orth_ao(mfA, 'nao')
 moA_nao = np.linalg.solve(C_A, mfA.mo_coeff)
 o_A_nao = moA_nao[:,mfA.mo_occ!=0] 
@@ -140,13 +138,13 @@ popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 """ Calculate and Compare Couplings """
 
 # Couplings standard method
-# t = time()
-# cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
-# cJ1 = cJ1 * 2625.50
-# cK1 = cK1 * 2625.50
-# t1 = time() - t
+t = time()
+cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
+cJ1 = cJ1 * 2625.50
+cK1 = cK1 * 2625.50
+t1 = time() - t
 
-cJ1,cK1,t1 = np.NaN, np.NaN, np.NaN # this calculation is so slow it's not even worth benchmarking
+# cJ1,cK1,t1 = np.NaN, np.NaN, np.NaN # this calculation is so slow it's not even worth benchmarking
 
 # Couplings with efficient density fitting method
 t = time()
@@ -170,10 +168,10 @@ t = time()
 Jq_nat = coupling_tdchg(chrgAnat,chrgBnat,molA.atom_coords(),molB.atom_coords()) * 2625.50
 t_nat = time() - t
 
-print("Couplings (kJ/mol)")
-print("cFull = %4.4f, cFull_eff = %4.4f, c_mul = %4.4f, c_low = %4.4f, c_mull= %4.4f\n"%(
-    (cJ1 - cK1), (cJ2 - cK2), Jq_mul, Jq_low, Jq_nat))
+print("\n Couplings (kJ/mol)")
+print("c_Full = %4.4f, cFull_eff = %4.4f, c_Coulomb = %4.4f, c_Exchange = %4.4f, c_Mul = %4.4f, c_Low = %4.4f, c_Nat = %4.4f\n"%(
+    (cJ1 - cK1), (cJ2 - cK2), cJ2, cK2, Jq_mul, Jq_low, Jq_nat))
 
 print("Time (s)")
-print("tFull = %0.1f, tFull_eff = %0.6f, t_mul = %0.6f, t_low = %0.6f, c_mull= %0.6f\n"%(
+print("t Full = %0.1f, t Full_eff = %0.6f, t Mul = %0.6f, t Low = %0.6f, t Nat= %0.6f\n"%(
     (t1,t2,t_mul,t_low,t_nat)))

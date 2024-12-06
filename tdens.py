@@ -57,7 +57,7 @@ def pop_lowdin(mol, dm, s = None):
     Lowdin population analysis
     
     Equivalent to Mullikan population analysis, but using Lowdin symmetrically
-    orthoganlized AO as the basis. 
+    orthogonalized orbitals as the basis. 
     
     P_{\mu} = Tr[S^{1/2} P_{\mu\nu} S^{1/2}]
     

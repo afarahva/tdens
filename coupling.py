@@ -18,7 +18,7 @@ from pyscf import gto, scf, tdscf, lib, dft, lo
 from functools import reduce
 from scipy.spatial.distance import cdist
 
-def jk_ints_standard(molA,molB,mfA,mfB,cisA,cisB, calcK=False):
+def jk_ints_standard(molA, molB, mfA, mfB, cisA, cisB, calcK=False):
     """
     A standard implementation of two-molecule JK integrals.
     This implementation is very memory intensive and very computationally heavy
@@ -33,8 +33,8 @@ def jk_ints_standard(molA,molB,mfA,mfB,cisA,cisB, calcK=False):
 
     Returns
     -------
-    cJ ~ Coulomb Coupling
-    cK ~ Exchange Coupling
+    cJ ~ Coulomb Coupling (2J)
+    cK ~ Exchange Coupling (K)
     
     V_{ab} = 2J - K
     """
@@ -65,12 +65,12 @@ def jk_ints_standard(molA,molB,mfA,mfB,cisA,cisB, calcK=False):
     eri_ijba = lib.einsum('pqrs,pi,qj,rb,sa->ijba', eri_ABBA, o_A, o_B, v_B, v_A)
     
     # J-type coupling and K-type coupling
-    cJ = np.einsum('iabj,ia,jb->', eri_iabj, cisA, cisB)
+    cJ = 2 * np.einsum('iabj,ia,jb->', eri_iabj, cisA, cisB)
     
     if calcK == False:
         return cJ
     else:
-        cK = np.einsum('ijba,ia,jb->', eri_ijba, cisA, cisB)
+        cK = 2 * np.einsum('ijba,ia,jb->', eri_ijba, cisA, cisB)
         return cJ, cK
 
 #More Efficient BlackBox Implementation
