@@ -137,14 +137,12 @@ popBnat,chrgBnat = pop_mulliken(molB, tdmB_nao, np.eye(molB.nao_nr()))
 #%%
 """ Calculate and Compare Couplings """
 
-# Couplings standard method
+# Couplings standard method, note this can become very expensive if using a larger basis set
 t = time()
 cJ1,cK1 = jk_ints_standard(molA,molB,mfA,mfB,cis_A,cis_B,calcK=True)
 cJ1 = cJ1 * 2625.50
 cK1 = cK1 * 2625.50
 t1 = time() - t
-
-# cJ1,cK1,t1 = np.NaN, np.NaN, np.NaN # this calculation is so slow it's not even worth benchmarking
 
 # Couplings with efficient density fitting method
 t = time()

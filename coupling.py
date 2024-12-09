@@ -4,7 +4,7 @@ tdens
 
 file: coupling.py
 author: Ardavan Farahvash (MIT) with significant contributions from Dr. Qiming
-Sun (Caltech)
+Sun (Caltech). 
 
 description: 
 Functions to calculate excitonic coupling integral using PySCF
@@ -21,15 +21,18 @@ from scipy.spatial.distance import cdist
 def jk_ints_standard(molA, molB, mfA, mfB, cisA, cisB, calcK=False):
     """
     A standard implementation of two-molecule JK integrals.
-    This implementation is very memory intensive and very computationally heavy
-    But, it is straightforward.
     
+    This implementation is very computationally expensive, scaling much like 
+    CCSD in terms of cost w.r.t number of orbitals due to having to calculate
+    4 center integrals over both occupied and virtual pairs. 
+    
+    But, it is straightforward.    
 
     Parameters
     ----------
     molA/molB : PySCF Mol Obj. Molecule A and Molecule B.
     mfA/mfB : PySCF SCF Obj. Fock Matrix for Molecule A and Molecule B. 
-    cisA/cisB : Numpy Array. CIS coefficients (nocc x nvirt)
+    cisA/cisB : Numpy Array. CIS coefficients (nocc x nvir)
 
     Returns
     -------
@@ -73,7 +76,7 @@ def jk_ints_standard(molA, molB, mfA, mfB, cisA, cisB, calcK=False):
         cK = 2 * np.einsum('ijba,ia,jb->', eri_ijba, cisA, cisB)
         return cJ, cK
 
-#More Efficient BlackBox Implementation
+# More Efficient Density Fitting Implementation
 def jk_ints_eff(molA, molB, tdmA, tdmB, calcK=False):
     """
     A more-efficient version of two-molecule JK integrals.
@@ -145,6 +148,9 @@ def jk_ints_eff(molA, molB, tdmA, tdmB, calcK=False):
 
 def coupling_tdchg(chgA,chgB,coordsA,coordsB):
     """
+    Calculates exciton coupling as a Coulomb interaction between
+    transition charges/monopoles on each monomer. 
+    
     Parameters
     ----------
     chgA : Numpy Array. Charges on Atoms in Mol A
